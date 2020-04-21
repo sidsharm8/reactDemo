@@ -1,0 +1,13 @@
+.sort{
+    display: flex;
+    margin-top:15px;
+    padding: 0 15px;
+
+    .sortLabel{
+        width:100%;
+
+        & select{
+            width:100%;
+        }
+    }
+}

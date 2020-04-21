@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+@media (--mq-md) {
+  .App {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .app-filter-panel {
+    width: 20%;
+  }
+  .app-selected-filters-list {
+    width: 80%;
+  }
+}

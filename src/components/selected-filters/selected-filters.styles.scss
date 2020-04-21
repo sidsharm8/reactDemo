@@ -1,0 +1,25 @@
+.selectedFilterContainer {
+  display: flex;
+  padding: 0 15px;
+  flex-direction: column;
+  margin-bottom: 20px;
+  .selectedFilterTitle {
+    align-self: flex-start;
+  }
+  .selectedFilters {
+    display: flex;
+    .selectedFilterLabel {
+      height: 30px;
+      border-radius: 10%;
+      padding: 5px;
+      background-color: #9e9999;
+      color: white;
+      margin-right: 7px;
+      .removeFilter::before {
+        content: "x";
+        margin-left: 5px;
+        cursor: pointer;
+      }
+    }
+  }
+}
