@@ -5,7 +5,8 @@ import CharacterCard from "../character-card/character-card.component";
 import { connect } from "react-redux";
 
 const API_URL = "https://rickandmortyapi.com/api/character/";
-
+const nonOtherSpecies = ["Human", "Mytholog"];
+const nonOtherOrigins = ["Uknown", "Post-Apocalyptic Earth", "Nuptia 4"];
 class CharacterList extends React.Component {
   nextUrl = null;
   constructor(props) {
@@ -84,9 +85,17 @@ class CharacterList extends React.Component {
       return list.filter((item) => {
         if (
           (!searchText ? true : item.name.toLowerCase().includes(searchText)) &&
-          (!species.length ? true : species.includes(item.species)) &&
+          (!species.length
+            ? true
+            : species.includes(item.species) ||
+              (species.includes("Other Species...") &&
+                !nonOtherSpecies.includes(item.species))) &&
           (!gender.length ? true : gender.includes(item.gender)) &&
-          (!origin.length ? true : origin.includes(item.origin.name))
+          (!origin.length
+            ? true
+            : origin.includes(item.origin.name) ||
+              (origin.includes("Other Origins...") &&
+                !nonOtherOrigins.includes(item.species)))
         )
           return true;
 
