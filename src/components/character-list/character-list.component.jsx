@@ -84,7 +84,9 @@ class CharacterList extends React.Component {
     if (species.length || gender.length || origin.length || searchText) {
       return list.filter((item) => {
         if (
-          (!searchText ? true : item.name.toLowerCase().includes(searchText)) &&
+          (!searchText
+            ? true
+            : item.name.toLowerCase().includes(searchText.toLowerCase())) &&
           (!species.length
             ? true
             : species.includes(item.species) ||
@@ -114,6 +116,7 @@ class CharacterList extends React.Component {
       if (this.nextUrl) this.debouncedFetchData(this.nextUrl);
     }
   }
+
   componentWillUnmount() {
     window.removeEventListener("scroll", this.throttledHandleOnScroll);
   }

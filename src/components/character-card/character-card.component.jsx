@@ -1,8 +1,12 @@
 import React from "react";
 import "./character-card.styles.scss";
 
-
-const CharacterCard = ({character}) => {
+const CharacterCard = ({ character }) => {
+  const diffYears = (date) => {
+    return (
+      Math.abs((new Date()).getUTCFullYear() - new Date(date).getUTCFullYear())
+    );
+  };
   return (
     <div className="cardContainer">
       <div className="cardProfile">
@@ -15,7 +19,7 @@ const CharacterCard = ({character}) => {
           <div className="cardProfileNameText">{character.name}</div>
           <div className="cardProfileMeta">
             <span>id: {character.id} - </span>
-            <span>created 2 years ago</span>
+            <span>created {diffYears(character.created)} years ago</span>
           </div>
         </div>
       </div>
