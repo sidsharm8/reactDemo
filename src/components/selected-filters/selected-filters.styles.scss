@@ -8,6 +8,7 @@
   }
   .selectedFilters {
     display: flex;
+    flex-wrap: wrap;
     .selectedFilterLabel {
       height: 30px;
       border-radius: 10%;

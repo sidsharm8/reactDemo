@@ -5,26 +5,32 @@ import { connect } from "react-redux";
 import addFilter from "../../redux/selected-filters/add-filter.actions";
 import removeFilter from "../../redux/selected-filters/remove-filter.actions";
 
-const FilterSection = ({ list, title, addFilter, removeFilter, selectedFilters }) => {
+const FilterSection = ({
+  list,
+  title,
+  addFilter,
+  removeFilter,
+  selectedFilters,
+}) => {
   const handleChange = (event) => {
     const { checked, value } = event.target;
     if (checked) {
-      addFilter(value);
+      addFilter({ filterType: title, value });
     } else {
-      removeFilter(value);
+      removeFilter({ filterType: title, value });
     }
   };
   return (
     <div className="filterSectionContainer">
       <h2 className="filterSectionTitle">{title}</h2>
       <div className="filterSectionList">
-        {list.map((item, index) => (
+        {list.map((item) => (
           <div key={item} className="filterSectionListItem">
             <label>
               <input
                 type="checkbox"
                 value={item}
-                checked={selectedFilters.indexOf(item) !== -1}
+                checked={selectedFilters[title].indexOf(item) !== -1}
                 onChange={(e) => {
                   handleChange(e);
                 }}
@@ -38,11 +44,11 @@ const FilterSection = ({ list, title, addFilter, removeFilter, selectedFilters }
   );
 };
 
-const mapStateToProps = state => ({
-    selectedFilters: state.selectedFilters
+const mapStateToProps = (state) => ({
+  selectedFilters: state.selectedFilters,
 });
 const mapDispatchToProps = (dispatch) => ({
-  addFilter: (filter) => dispatch(addFilter(filter)),
-  removeFilter: (filter) => dispatch(removeFilter(filter)),
+  addFilter: (filter) => dispatch(addFilter({...filter})),
+  removeFilter: (filter) => dispatch(removeFilter({...filter})),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(FilterSection);

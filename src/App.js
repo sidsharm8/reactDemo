@@ -15,8 +15,11 @@ function App() {
       </section>
       <section className="app-selected-filters-list">
         <SelectedFilters />
-        <SearchByName />
-        <Sort />
+        <div className="app-search-sort">
+          <SearchByName />
+          <Sort />
+        </div>
+
         <CharacterList />
       </section>
     </div>

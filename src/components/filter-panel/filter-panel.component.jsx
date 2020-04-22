@@ -4,15 +4,15 @@ import FilterSection from "../filter-section/filter-section.component";
 
 const filters = [
   {
-    title: "Species",
+    title: "species",
     list: ["Human", "Mytholog", "Other Species..."],
   },
   {
-    title: "Gender",
+    title: "gender",
     list: ["Male", "Female"],
   },
   {
-    title: "Origin",
+    title: "origin",
     list: ["Unknown", "Post-Apocalyptic Earth", "Nuptia 4", "Other Origins..."],
   },
 ];

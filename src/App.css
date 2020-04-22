@@ -36,7 +36,7 @@
     transform: rotate(360deg);
   }
 }
-@media (--mq-md) {
+@media (min-width: 1024px) {
   .App {
     display: flex;
     flex-wrap: wrap;
@@ -46,5 +46,9 @@
   }
   .app-selected-filters-list {
     width: 80%;
+  }
+  .app-search-sort{
+    display:flex;
+    justify-content: space-between;
   }
 }

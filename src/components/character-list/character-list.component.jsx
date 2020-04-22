@@ -1,149 +1,115 @@
 import React from "react";
+import { debounce, throttle } from "lodash";
 import "./character-list.styles.scss";
 import CharacterCard from "../character-card/character-card.component";
+import { connect } from "react-redux";
 
-const characterList = [
-  {
-    id: 1,
-    name: "Rick Sanchez",
-    status: "Alive",
-    species: "Human",
-    type: "",
-    gender: "Male",
-    origin: {
-      name: "Earth (C-137)",
-      url: "https://rickandmortyapi.com/api/location/1",
-    },
-    location: {
-      name: "Earth (Replacement Dimension)",
-      url: "https://rickandmortyapi.com/api/location/20",
-    },
-    image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-    episode: [
-      "https://rickandmortyapi.com/api/episode/1",
-      "https://rickandmortyapi.com/api/episode/2",
-      "https://rickandmortyapi.com/api/episode/3",
-      "https://rickandmortyapi.com/api/episode/4",
-      "https://rickandmortyapi.com/api/episode/5",
-      "https://rickandmortyapi.com/api/episode/6",
-      "https://rickandmortyapi.com/api/episode/7",
-      "https://rickandmortyapi.com/api/episode/8",
-      "https://rickandmortyapi.com/api/episode/9",
-      "https://rickandmortyapi.com/api/episode/10",
-      "https://rickandmortyapi.com/api/episode/11",
-      "https://rickandmortyapi.com/api/episode/12",
-      "https://rickandmortyapi.com/api/episode/13",
-      "https://rickandmortyapi.com/api/episode/14",
-      "https://rickandmortyapi.com/api/episode/15",
-      "https://rickandmortyapi.com/api/episode/16",
-      "https://rickandmortyapi.com/api/episode/17",
-      "https://rickandmortyapi.com/api/episode/18",
-      "https://rickandmortyapi.com/api/episode/19",
-      "https://rickandmortyapi.com/api/episode/20",
-      "https://rickandmortyapi.com/api/episode/21",
-      "https://rickandmortyapi.com/api/episode/22",
-      "https://rickandmortyapi.com/api/episode/23",
-      "https://rickandmortyapi.com/api/episode/24",
-      "https://rickandmortyapi.com/api/episode/25",
-      "https://rickandmortyapi.com/api/episode/26",
-      "https://rickandmortyapi.com/api/episode/27",
-      "https://rickandmortyapi.com/api/episode/28",
-      "https://rickandmortyapi.com/api/episode/29",
-      "https://rickandmortyapi.com/api/episode/30",
-      "https://rickandmortyapi.com/api/episode/31",
-    ],
-    url: "https://rickandmortyapi.com/api/character/1",
-    created: "2017-11-04T18:48:46.250Z",
-  },
-  {
-    id: 1,
-    name: "Rick Sanchez",
-    status: "Alive",
-    species: "Human",
-    type: "",
-    gender: "Male",
-    origin: {
-      name: "Earth (C-137)",
-      url: "https://rickandmortyapi.com/api/location/1",
-    },
-    location: {
-      name: "Earth (Replacement Dimension)",
-      url: "https://rickandmortyapi.com/api/location/20",
-    },
-    image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-    episode: [
-      "https://rickandmortyapi.com/api/episode/1",
-      "https://rickandmortyapi.com/api/episode/2",
-      "https://rickandmortyapi.com/api/episode/3",
-      "https://rickandmortyapi.com/api/episode/4",
-      "https://rickandmortyapi.com/api/episode/5",
-      "https://rickandmortyapi.com/api/episode/6",
-      "https://rickandmortyapi.com/api/episode/7",
-      "https://rickandmortyapi.com/api/episode/8",
-      "https://rickandmortyapi.com/api/episode/9",
-      "https://rickandmortyapi.com/api/episode/10",
-      "https://rickandmortyapi.com/api/episode/11",
-      "https://rickandmortyapi.com/api/episode/12",
-      "https://rickandmortyapi.com/api/episode/13",
-      "https://rickandmortyapi.com/api/episode/14",
-      "https://rickandmortyapi.com/api/episode/15",
-      "https://rickandmortyapi.com/api/episode/16",
-      "https://rickandmortyapi.com/api/episode/17",
-      "https://rickandmortyapi.com/api/episode/18",
-      "https://rickandmortyapi.com/api/episode/19",
-      "https://rickandmortyapi.com/api/episode/20",
-      "https://rickandmortyapi.com/api/episode/21",
-      "https://rickandmortyapi.com/api/episode/22",
-      "https://rickandmortyapi.com/api/episode/23",
-      "https://rickandmortyapi.com/api/episode/24",
-      "https://rickandmortyapi.com/api/episode/25",
-      "https://rickandmortyapi.com/api/episode/26",
-      "https://rickandmortyapi.com/api/episode/27",
-      "https://rickandmortyapi.com/api/episode/28",
-      "https://rickandmortyapi.com/api/episode/29",
-      "https://rickandmortyapi.com/api/episode/30",
-      "https://rickandmortyapi.com/api/episode/31",
-    ],
-    url: "https://rickandmortyapi.com/api/character/1",
-    created: "2017-11-04T18:48:46.250Z",
-  },
-];
+const API_URL = "https://rickandmortyapi.com/api/character/";
+
 class CharacterList extends React.Component {
+  nextUrl = null;
   constructor(props) {
     super(props);
     this.state = {
       characterList: [],
+      /* url :  */
     };
   }
   componentDidMount() {
-    this.fetchData();
+    /* debounce this function to prevent unnecessary function calls on search and filter change */
+    this.debouncedFetchData = debounce(this.fetchData.bind(this), 500);
+    this.debouncedFetchData();
+    /* throttle scroll event for lazy loading list */
+    this.throttledHandleOnScroll = throttle(
+      this.handleOnScroll.bind(this),
+      500
+    );
+    setTimeout(() => {
+      window.addEventListener("scroll", this.throttledHandleOnScroll);
+    }, 1000);
   }
   componentDidUpdate({ selectedFilters, searchText, sortOrder }) {
     // Typical usage (don't forget to compare props):
     if (
-      this.props.selectedFilters !== selectedFilters ||
-      this.props.searchText !== searchText ||
-      this.props.sortOrder !== sortOrder
+      this.props.selectedFilters === selectedFilters ||
+      this.props.searchText === searchText ||
+      this.props.sortOrder === sortOrder
     ) {
-      this.fetchData();
+      return false;
     }
   }
-  fetchData() {
-    const url = "https://rickandmortyapi.com/api/character/";
-    const query = `?name=${this.searchText || ''}&status=alive`;
-    fetch(url + query)
+  generateQueryString() {
+    let query = [];
+    if (this.props.searchText) {
+      query.push(`name=${this.props.searchText}`);
+    }
+    /*  if(this.props.selectedFilters.species.length){
+      query.push(`species=${this.props.selectedFilters.species.join("&species=")}`);
+    }
+    if(this.props.selectedFilters.gender.length){
+      query.push(`gender=${this.props.selectedFilters.gender.join("&gender=")}`);
+    } */
+    return `?${query.join("&")}`;
+  }
+  fetchData(url = API_URL) {
+    fetch(url)
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        this.setState({ characterList: data.results || [] });
+        /* store url of next page for lazy loading api call */
+        if (data.info && data.info.next) this.nextUrl = data.info.next;
+        else this.nextUrl = null;
+        this.setState((prevState) => {
+          return {
+            characterList: prevState.characterList.concat(data.results || []),
+          };
+        });
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   }
+  sortList(list) {
+    return this.filterList(list).sort((a, b) => {
+      if (!this.props.sortOrder || this.props.sortOrder === "ascending")
+        return a.id - b.id;
+      else return b.id - a.id;
+    });
+  }
+  filterList(list) {
+    const { species, gender, origin } = this.props.selectedFilters;
+    const { searchText } = this.props;
+    if (species.length || gender.length || origin.length || searchText) {
+      return list.filter((item) => {
+        if (
+          (!searchText ? true : item.name.toLowerCase().includes(searchText)) &&
+          (!species.length ? true : species.includes(item.species)) &&
+          (!gender.length ? true : gender.includes(item.gender)) &&
+          (!origin.length ? true : origin.includes(item.origin.name))
+        )
+          return true;
+
+        return false;
+      });
+    } else {
+      return list;
+    }
+  }
+  handleOnScroll() {
+    /* user has scrolled to the bottom of the page */
+    if (
+      document.documentElement.scrollTop + window.innerHeight >=
+      document.documentElement.scrollHeight - 50
+    ) {
+      if (this.nextUrl) this.debouncedFetchData(this.nextUrl);
+    }
+  }
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.throttledHandleOnScroll);
+  }
   render() {
-    const { characterList } = this.state;
+    const characterList = this.sortList(this.state.characterList);
     return (
       <div className="characterList">
         {characterList.map((character) => (
@@ -153,14 +119,11 @@ class CharacterList extends React.Component {
     );
   }
 }
-/* const CharacterList = ({ selectedFilters, searchText, sortOrder }) => {
-  return (
-    <div className="characterList">
-      {characterList.map((character) => (
-        <CharacterCard key={character.id} character={character} />
-      ))}
-    </div>
-  );
-}; */
 
-export default CharacterList;
+const mapStateToProps = (state) => ({
+  selectedFilters: state.selectedFilters,
+  searchText: state.searchText,
+  sortOrder: state.sortType,
+});
+
+export default connect(mapStateToProps)(CharacterList);

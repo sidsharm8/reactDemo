@@ -4,6 +4,9 @@
   padding: 10px 10px;
   background-color: #25252e;
   width: 44%;
+  @media (min-width:1024px){
+    width:22%;
+  }
   .cardProfile {
     position: relative;
     height: 200px;
@@ -20,9 +23,9 @@
       color: white;
       background-color: black;
       opacity: 0.6;
-      height: 35%;
+      height: auto;
       .cardProfileNameText {
-        font-size: x-large;
+        font-size: large;
         padding: 5px;
         align-self: flex-start;
       }
